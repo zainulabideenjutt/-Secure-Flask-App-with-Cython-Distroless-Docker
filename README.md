@@ -1,6 +1,7 @@
 # Secure Flask App with Cython & Distroless Docker
 
 ## 📋 Table of Contents
+
 - [What This Project Does](#what-this-project-does)
 - [Prerequisites](#prerequisites)
 - [Project Structure](#project-structure)
@@ -29,32 +30,35 @@ This project creates a **secure Flask web application** with three layers of pro
 ### Required Software
 
 1. **Docker Desktop** (includes Docker and Docker Compose)
+
    - **Windows**: Download from [docker.com](https://www.docker.com/products/docker-desktop)
    - **Mac**: Download from [docker.com](https://www.docker.com/products/docker-desktop)
    - **Linux**: Install Docker Engine and Docker Compose separately
-   
+
    **Verify Installation**:
+
    ```bash
    docker --version
    docker-compose --version
    ```
 
 2. **Text Editor** (choose one)
+
    - Visual Studio Code (recommended)
    - Sublime Text
    - Notepad++ (Windows)
    - Any code editor you prefer
 
 3. **Python**
-    - Download from [python.org](python.org)
-    - verify with:
-    ```
-    python3 --version
-    pip3 --version
-    or
-    python --version
-    pip --version
-    ```
+   - Download from [python.org](python.org)
+   - verify with:
+   ```
+   python3 --version
+   pip3 --version
+   or
+   python --version
+   pip --version
+   ```
 
 ### Required Knowledge (Beginner-Friendly!)
 
@@ -116,6 +120,7 @@ if __name__ == '__main__':
 ```
 
 **What it does**:
+
 - `Flask(__name__)`: Creates a Flask web application
 - `@app.route('/')`: Defines the homepage URL
 - `hello_world()`: Function that returns "Hello, World!" when someone visits your site
@@ -133,12 +138,14 @@ app.app.run(host="0.0.0.0", port=5000)
 ```
 
 **What it does**:
+
 - `import app`: Imports your compiled Flask application (the `.so` binary file)
 - `app.app.run(...)`: Starts the Flask server
   - `host="0.0.0.0"`: Makes the server accessible from outside the container
   - `port=5000`: Runs on port 5000 (Flask's default)
 
 **Why separate files?**
+
 - `app.py` contains your business logic (gets compiled for security)
 - `run.py` is the simple launcher (stays as plain Python)
 
@@ -158,11 +165,13 @@ setup(
 ```
 
 **What it does**:
+
 - `cythonize("app.py", ...)`: Tells Cython to compile `app.py`
 - `language_level: "3"`: Use Python 3 syntax
 - Creates a `.so` file (shared object/binary) that Python can import
 
 **The Magic**: After running this, `app.py` becomes a binary file (`.so`) that:
+
 - ✅ Can be imported and run by Python
 - ❌ Cannot be read or edited with a text editor
 - ❌ Cannot be easily reverse-engineered
@@ -181,6 +190,7 @@ wheel
 ```
 
 **What each package does**:
+
 - **Cython**: Compiles Python to C/binary (for source code protection)
 - **Flask**: Web framework to create your web application
 - **setuptools**: Tools for building Python packages
@@ -192,12 +202,13 @@ wheel
 
 **Purpose**: Instructions for Docker to build your application container.
 
-Create this file named Dockerfile with the content provided below (the extensively commented Dockerfile). 
+Create this file named Dockerfile with the content provided below (the extensively commented Dockerfile).
+
 ```
 # ============================================================================
 # STAGE 1: BUILD STAGE
 # ============================================================================
-# Purpose: 
+# Purpose:
 # - Compile Python source code to Cython binary (.so file)
 # - Install all Python dependencies
 # - This stage contains build tools (gcc, pip, etc.) that won't be in final image
@@ -229,7 +240,7 @@ COPY requirements.txt .
 # Install all Python packages (Flask, Cython, etc.)
 # --no-cache-dir: Don't store pip cache, reduces image size
 # Packages installed to default location: /usr/local/lib/python3.11/site-packages
-RUN pip install --no-cache-dir -r requirements.txt 
+RUN pip install --no-cache-dir -r requirements.txt
 
 # ----------------------------------------------------------------------------
 # Copy Application Source Code
@@ -330,21 +341,24 @@ EXPOSE 5000
 # Run the application using distroless's Python interpreter
 # Distroless sets /usr/bin/python3.11 as the default entrypoint
 # It will execute: /usr/bin/python3.11 run.py
-# 
+#
 # run.py should:
 # 1. Import the compiled binary: from app import app (or similar)
 # 2. Start Flask: app.run(host='0.0.0.0', port=5000)
 CMD ["run.py"]
 ```
+
 The file has two main stages:
 
 **Stage 1 - Builder** (lines 1-70):
+
 - Installs build tools (gcc, compilers)
 - Installs Python dependencies
 - Compiles your Python code to binary
 - Deletes source code after compilation
 
 **Stage 2 - Runtime** (lines 71-end):
+
 - Uses minimal distroless image
 - Copies only compiled binary and dependencies
 - Runs as non-root user
@@ -370,6 +384,7 @@ services:
 ```
 
 **What it does**:
+
 - `build`: Tells Docker where to find the Dockerfile
 - `image: flask-image:1.0`: Names your Docker image
 - `container_name: flask_app`: Names the running container
@@ -418,6 +433,7 @@ docker-compose.yaml
 ```
 
 **Why this matters**:
+
 - Prevents accidentally copying sensitive files (like `.env` with passwords)
 - Makes Docker builds faster by excluding unnecessary files
 - Reduces final image size
@@ -474,6 +490,7 @@ Think of this as a workshop where you have all the tools:
 #### Why Two Stages?
 
 **Security & Size Benefits**:
+
 - Builder stage: ~500 MB (with all tools)
 - Runtime stage: ~150 MB (minimal)
 - Attacker can't find: source code, compilers, package managers, shell
@@ -495,6 +512,7 @@ docker-compose up --build
 ```
 
 **What happens**:
+
 1. Docker reads `docker-compose.yaml`
 2. Builds your Docker image using the Dockerfile
 3. Compiles your Python code to binary
@@ -502,6 +520,7 @@ docker-compose up --build
 5. Your app is now running!
 
 **You'll see output like**:
+
 ```
 [+] Building 45.2s
 [+] Running 1/1
@@ -511,12 +530,14 @@ flask_app  |  * Running on http://127.0.0.1:5000
 ```
 
 **To stop the container**:
+
 ```bash
 # Press Ctrl+C, then run:
 docker-compose down
 ```
 
 **To run in background (detached mode)**:
+
 ```bash
 docker-compose up -d
 ```
@@ -551,11 +572,13 @@ docker rm flask_app
 ### 1. Open Your Web Browser
 
 Navigate to:
+
 ```
 http://localhost:5000
 ```
 
 You should see:
+
 ```
 Hello, World!
 ```
@@ -567,6 +590,7 @@ curl http://localhost:5000
 ```
 
 Output:
+
 ```
 Hello, World!
 ```
@@ -583,7 +607,9 @@ docker exec -it flask_app /bin/bash
 docker exec -it flask_app /bin/sh
 # Error: executable file not found in $PATH
 ```
+
 Try to Export Container files system using **docker export**
+
 ```
 docker export flask_app -o flask_app_fs.tar
 # Takes everything inside your running container (the container’s internal files and folders)
@@ -591,6 +617,7 @@ and saves it as a single .tar file (like a zip).
 ```
 
 On Extraction You'll see:
+
 ```
 app.cpython-311-x86_64-linux-gnu.so  # Your compiled binary
 run.py                               # Entry point
@@ -670,6 +697,7 @@ site-packages/                       # Dependencies
 ### 1. Source Code Protection (Cython)
 
 **Before Compilation** (`app.py`):
+
 ```python
 # Anyone can read this:
 from flask import Flask
@@ -680,6 +708,7 @@ def hello_world():
 ```
 
 **After Compilation** (`app.so` - binary file):
+
 ```
 ELF binary (unreadable gibberish)
 7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
@@ -688,6 +717,7 @@ ELF binary (unreadable gibberish)
 ```
 
 **Benefits**:
+
 - ✅ Protects proprietary algorithms
 - ✅ Prevents code theft
 - ✅ Makes reverse engineering extremely difficult
@@ -697,6 +727,7 @@ ELF binary (unreadable gibberish)
 ### 2. Traditional Docker Image VS Distroless Image
 
 **Traditional Docker Image**:
+
 ```
 Ubuntu/Debian Base Image
 ├── Shell (bash, sh)
@@ -709,6 +740,7 @@ Attack Surface: HIGH
 ```
 
 **Distroless Image**:
+
 ```
 Distroless Base Image
 ├── Python Runtime ONLY
@@ -718,6 +750,7 @@ Attack Surface: MINIMAL
 ```
 
 **Benefits**:
+
 - ✅ 70% smaller image size
 - ✅ No shell = attackers can't execute commands
 - ✅ No package managers = can't install malware
@@ -729,6 +762,7 @@ Attack Surface: MINIMAL
 ### 3. Non-Root User
 
 **Running as Root (Bad)**:
+
 ```
 If container is compromised:
 └── Attacker has ROOT privileges
@@ -738,6 +772,7 @@ If container is compromised:
 ```
 
 **Running as Non-Root (Good)**:
+
 ```
 If container is compromised:
 └── Attacker has LIMITED privileges
@@ -773,16 +808,21 @@ def health_check():
 ```
 
 Then rebuild:
+
 ```bash
 docker-compose down
 docker-compose up --build
 ```
+
 Test Endpoints:
+
 ```
 http://localhost:5000/api/data
 http://localhost:5000/health
 ```
+
 You Should see for **/api/data**:
+
 ```
 {
    "status":"success",
@@ -793,17 +833,21 @@ You Should see for **/api/data**:
    ]
 }
 ```
+
 You Should see for **/health**:
+
 ```
 {
    "status":"healthy"
 }
 ```
+
 ---
 
 ### Adding Dependencies
 
 Edit `requirements.txt`:
+
 ```
 Cython
 Flask
@@ -821,12 +865,14 @@ Then rebuild the image.
 ## 📚 Additional Resources
 
 ### Official Documentation
+
 - **Flask**: https://flask.palletsprojects.com/
 - **Cython**: https://cython.readthedocs.io/
 - **Docker**: https://docs.docker.com/
 - **Distroless**: https://github.com/GoogleContainerTools/distroless
 
 ### Learning Resources
+
 - **Docker for Beginners**: https://www.tutorialspoint.com/docker/index.htm
 
 ---
@@ -839,13 +885,13 @@ You've successfully created a secure, production-ready Flask application with:
 ✅ Minimal attack surface using distroless images  
 ✅ Non-root execution for enhanced security  
 ✅ Easy deployment with Docker Compose  
-✅ Professional project structure  
+✅ Professional project structure
 
 **Your application is now ready for deployment!**
 
 ---
 
 **Questions or Issues?**  
-Check the Common Issues section above or consult the official documentation links provided.
+consult the official documentation links provided.
 
 Happy coding! 🚀
