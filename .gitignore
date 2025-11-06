@@ -1,0 +1,46 @@
+# ==============================================
+# 📄 Project: Flask + Cython + Docker
+# ==============================================
+
+# 📝 Local notes or temp files
+notes.txt
+
+# 🐍 Python cache and compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# 🧪 Cython build artifacts
+build/
+dist/
+*.egg-info/
+*.c
+*.so
+
+# 🌍 Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# 🧱 Local source or temporary output files
+# (uncomment if you generate compiled files here)
+# app/*.c
+# app/*.so
+
+# 🧰 IDE and editor settings
+.idea/
+.vscode/
+*.swp
+*.log
+*.DS_Store
+
+# 🐙 Git-related
+.git/
+
+# 🐳 Docker-related (optional)
+# Comment out if you want to version Dockerfiles
+*.env
+docker-compose.override.yml
+*.bak
