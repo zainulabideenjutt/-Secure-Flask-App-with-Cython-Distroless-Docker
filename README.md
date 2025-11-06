@@ -8,6 +8,7 @@
 - [Step-by-Step Setup](#step-by-step-setup)
 - [Understanding Each File](#understanding-each-file)
 - [How Docker Build Works](#how-docker-build-works)
+- [Dockerfile Explaination](#dockerfile-explaination)
 - [Running Your Application](#running-your-application)
 - [Testing Your Application](#testing-your-application)
 
